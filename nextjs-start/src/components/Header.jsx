@@ -10,12 +10,34 @@ import { addFakeRestaurantsAndReviews } from "@/src/lib/firebase/firestore.js";
 import { useRouter } from "next/navigation";
 
 function useUserSession(initialUser) {
-	return;
+	// The initialUser comes from the server through a server component
+	const [user, setUser] = useState(initialUser);
+	const router = useRouter();
+
+	useEffect(() => {
+		const unsubscribe = onAuthStateChanged(authUser => {
+			setUser(authUser);
+		});
+		return () => {
+			unsubscribe();
+		};
+	}, []);
+
+	useEffect(() => {
+		onAuthStateChanged(authUser => {
+			if (user === undefined) return;
+			if (user?.email !== authUser?.email) {
+				router.refresh();
+			}
+		});
+	}, [user]);
+
+	return user;
 }
 
-export default function Header({initialUser}) {
+export default function Header({ initialUser }) {
 
-	const user = useUserSession(initialUser) ;
+	const user = useUserSession(initialUser);
 
 	const handleSignOut = event => {
 		event.preventDefault();
@@ -31,7 +53,7 @@ export default function Header({initialUser}) {
 		<header>
 			<Link href="/" className="logo">
 				<img src="/friendly-eats.svg" alt="FriendlyEats" />
-				Friendly Eats
+				Friendly Eats2
 			</Link>
 			{user ? (
 				<>

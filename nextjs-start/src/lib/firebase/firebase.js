@@ -43,7 +43,7 @@ export async function getAuthenticatedAppForUser(session = null) {
     getAdminApps().find((it) => it.name === ADMIN_APP_NAME) ||
     initializeAdminApp({
       credential: credential.applicationDefault(),
-  }, ADMIN_APP_NAME);
+    }, ADMIN_APP_NAME);
 
   const adminAuth = getAdminAuth(adminApp);
   const noSessionReturn = { app: null, currentUser: null };
@@ -59,7 +59,7 @@ export async function getAuthenticatedAppForUser(session = null) {
   const decodedIdToken = await adminAuth.verifySessionCookie(session);
 
   const app = initializeAuthenticatedApp(decodedIdToken.uid)
-	const auth = getAuth(app)
+  const auth = getAuth(app)
 
   // handle revoked tokens
   const isRevoked = !(await adminAuth
